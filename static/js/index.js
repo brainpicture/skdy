@@ -1,5 +1,10 @@
 var bwr;
 $(document).ready(function() {
   bwr = new Browser($('#files'));
-  bwr.render('./');
+  
+  window.onpopstate = function(e) {
+    bwr.render('.'+location.pathname, true);
+  }
 });
+
+

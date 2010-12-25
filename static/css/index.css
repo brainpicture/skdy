@@ -42,6 +42,10 @@ td {
   background: #ccd653;
   color: #000000;
 }
+#files a {
+  color: #ffffff;
+  text-decoration: none;
+}
 #files .head {
   height: 20px;
   adding: 1px 5px 2px 5px;
@@ -58,7 +62,7 @@ td {
   height: 200px;
   margin: 0px;
   padding: 0px;
-  background: #ff0000;
+  overflow: hidden;
 }
 #editor .tab {
   height: 100%;
@@ -66,5 +70,4 @@ td {
   margin: 0px;
   padding: 0px;
   border: none;
-  background: #00ff00;
 }

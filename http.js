@@ -16,7 +16,7 @@ var server = http.createServer(function (req, res) {
     });
     res.end(JSON.stringify(data));
   }
-  if (req.url == '/') {
+  if (req.url.indexOf('.') == -1) {
     req.url = '/index.html'
   }
   var input = url.parse(req.url);

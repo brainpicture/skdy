@@ -6,6 +6,18 @@ var regs = {
 
 var browsers = 0;
 
+function processPath(path, dirname) {
+  if (dirname == '../') {
+    var deep = path.lastIndexOf('/');
+    if (deep != -1) {
+      path = path.slice(0, deep);
+    }
+  } else {
+    path = (path + '/' + dirname).replace(regs['//'], '/');
+  }
+  return path;
+}
+
 function Browser(cont) {
   this.id = browsers += 1;
   this.cont = cont;
@@ -31,18 +43,10 @@ function Browser(cont) {
   });
 }
 
-Browser.prototype.go  = function(obj) {
-  var dirname = obj.innerHTML;
-  var path = this.path;
-  if (dirname == '../') {
-    var deep = path.lastIndexOf('/');
-    if (deep != -1) {
-      path = path.slice(0, deep);
-    }
-  } else {
-    path = (path + '/' + dirname).replace(regs['//'], '/');
-  }
+Browser.prototype.go = function(obj) {
+  var path = processPath(this.path, obj.innerHTML);
   this.render(path);
+  return false;
 }
 
 Browser.prototype.select  = function(obj) {
@@ -62,11 +66,18 @@ Browser.prototype.load = function(path, callback) {
   $.get('/folder', {path: path}, callback, 'json');
 }
 
-Browser.prototype.render = function(path) {
+Browser.prototype.render = function(path, onHistory) {
   var self = this;
   this.load(path, function(data) {
     if (data.type == 'dir') {
       self.path = path;
+      if (path[0] == '.') {
+        path = path.slice(1);
+      }
+      if (!path) {
+        path = '/';
+      }
+      if (!onHistory) history.pushState(true, path, path);
       var height = self.cont.height();
       var items = Math.ceil(height / 24) - 2;
       var html = '<div class="head">'+path+'</div>';
@@ -77,7 +88,8 @@ Browser.prototype.render = function(path) {
         if (items[i][0] == '.' && items[i] != '../') {
           continue;
         }
-        columns.push('<a onclick="bwr.go(this);" onmousemove="bwr.select(this);">'+items[i]+'</a>');
+        var href = processPath(self.path, items[i]);
+        columns.push('<a onclick="return bwr.go(this);" href="'+href+'" onmousemove="bwr.select(this);">'+items[i]+'</a>');
       }
       html += columns.join('');
       self.cont.html(html);
